@@ -27,24 +27,66 @@ def getB():
 def RGBtoHEX():
     return '#%02x%02x%02x' % (getR(), getG(), getB())
 
+def starting_point(event):
+    newCanvas.old_x = event.x
+    newCanvas.old_y = event.y
+
+def paint(event):
+    newCanvas.create_line(newCanvas.old_x, newCanvas.old_y, event.x, event.y, width=2)
+    newCanvas.old_x = event.x 
+    newCanvas.old_y = event.y
+
+def erase(event):
+    newCanvas.create_line(newCanvas.old_x, newCanvas.old_y, event.x, event.y, width=20, fill=RGBtoHEX())
+    newCanvas.old_x = event.x 
+    newCanvas.old_y = event.y
+
+def changeTool(num):
+    match num:
+        case 1:
+            newCanvas.config(cursor="pencil")
+            newCanvas.bind("<Button-1>", starting_point)
+            newCanvas.bind("<B1-Motion>", paint)
+        case 2:
+            newCanvas.config(cursor="X_cursor")
+            newCanvas.bind("<Button-1>", starting_point)
+            newCanvas.bind("<B1-Motion>", erase)
+        case 3:
+            newCanvas.config(cursor="spider")
+        case 4:
+            newCanvas.config(cursor="pirate")
+    
+
 def createCanvas():        
     canvasWindow = tk.Tk()
     canvasWindow.title("Canvas")
-    newCanvas = tk.Canvas(canvasWindow, height=getY(), width=getX(), background=RGBtoHEX(), cursor="pencil")
-    newCanvas.pack()
 
-    def start_paint(event):
-        newCanvas.old_x = event.x
-        newCanvas.old_y = event.y
+    canvasContainer = tk.Frame(canvasWindow, height=getY()+100, width=getX()+100, background='#ffffff')
+    canvasContainer.grid()
 
-    def paint(event):
-        newCanvas.create_line(newCanvas.old_x, newCanvas.old_y, event.x, event.y, width=2)
-        newCanvas.old_x = event.x
-        newCanvas.old_y = event.y
+    labelTools = tk.Label(canvasContainer, text="Tools")
+    labelTools.grid(row=0, column=0)
 
-    newCanvas.bind("<Button-1>", start_paint)
+    # I'm not sure why but the commands automatically activate unless I use lambda 
+    selectPencil = tk.Button(canvasContainer, text="Pencil", command=lambda: changeTool(1) )  
+    selectPencil.grid(row=0, column=1)
+
+    selectEraser = tk.Button(canvasContainer, text="Eraser", command=lambda: changeTool(2) )
+    selectEraser.grid(row=0, column=2)
+
+    selectTemp1 = tk.Button(canvasContainer, text="Temp", command=lambda: changeTool(3) ) 
+    selectTemp1.grid(row=0, column=3)
+
+    selectTemp2 = tk.Button(canvasContainer, text="Temp2", command=lambda: changeTool(4) )
+    selectTemp2.grid(row=0, column=4)
+
+    global newCanvas
+    newCanvas = tk.Canvas(canvasContainer, height=getY(), width=getX(), background=RGBtoHEX(), cursor="pencil")
+    newCanvas.grid(row=1, column=0, columnspan=5)
+
+    newCanvas.bind("<Button-1>", starting_point)
     newCanvas.bind("<B1-Motion>", paint)
-    #newCanvas.bind("<ButtonRelease-1>", print("release"))
+
     canvasWindow.mainloop()
 
 
@@ -67,15 +109,15 @@ frame.pack()
 # X/Y Values
 labelX = tk.Label(frame, text="X: ")
 labelX.grid(row=0, column=0)
-inputX = tk.Entry(frame, width=10, textvariable="400")
+inputX = tk.Entry(frame, width=10)
 inputX.grid(row=0, column=1)
-inputX.insert(0, 300)
+inputX.insert(0, 600)
 
 labelY = tk.Label(frame, text="Y: ")
 labelY.grid(row=0, column=3)
 inputY = tk.Entry(frame, width=10)
 inputY.grid(row=0, column=4)
-inputY.insert(0, 300)
+inputY.insert(0, 600)
 
 labelXYError = tk.Label(frame, text="")
 labelXYError.grid(row=1,column=0)
