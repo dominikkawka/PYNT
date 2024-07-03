@@ -4,7 +4,9 @@ A Python application that allows users to create custom canvas (size and backgro
 
 ## Features
 - Customise Width, Height and RGB of canvas
+- Select tools using the toolbar
 - Draw using the pencil tool
+- Erase parts of drawings using the eraser tool
 
 ## Key-bindings
 Key-bindings and shortcuts to optimise workflow.
@@ -12,5 +14,5 @@ Key-bindings and shortcuts to optimise workflow.
 ## Running the application
 
 `cd PYNT`
-`python3 main.py`
 
+`python3 main.py`
