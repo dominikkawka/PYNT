@@ -6,7 +6,9 @@ A Python application that allows users to create custom canvas (size and backgro
 - Customise Width, Height and RGB of canvas
 - Select tools using the toolbar
 - Draw using the pencil tool, while choosing from different colours
+- Select different brush sizes
 - Erase parts of drawings using the eraser tool
+- Draw shapes such as rectangles and ovals
 - Clear the entire canvas
 
 ## Key-bindings
