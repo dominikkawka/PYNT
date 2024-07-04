@@ -1,9 +1,8 @@
 import tkinter as tk
 
 #TODO: 
-#   - XY Validation
+#   - XY Validation in Create Menu
 #   - Split main into smaller files (e.g. paint.py, erase.py etc.)
-#   - Fix bug mentioned @ ln 31~
 
 def getX():
     input = int(inputX.get())
@@ -28,35 +27,50 @@ def getB():
 def RGBtoHEX():
     return '#%02x%02x%02x' % (getR(), getG(), getB())
 
-# BUG: it only starts painting once you move the mouse, you can't just press M1 to create a small dot. 
-def starting_point(event):
+def changeBrushSize(num):
+    global brushSize
+    match num:
+        case 1:
+            brushSize = 2
+        case 2:
+            brushSize = 6
+        case 3:
+            brushSize = 12
+        case 4:
+            brushSize = 24
+
+def starting_point_brush(event):
     newCanvas.old_x = event.x
     newCanvas.old_y = event.y
+    newCanvas.create_oval(newCanvas.old_x, newCanvas.old_y, event.x, event.y, width=brushSize, fill=paintingColour, outline=paintingColour)
+
+def starting_point_shape(event):
+    newCanvas.old_x = event.x
+    newCanvas.old_y = event.y
+    
+    global startingX
+    global startingY
+    startingX = newCanvas.old_x
+    startingY = newCanvas.old_y
 
 def paint(event):
-    newCanvas.create_line(newCanvas.old_x, newCanvas.old_y, event.x, event.y, width=2, fill=paintingColour)
+    newCanvas.create_oval(newCanvas.old_x, newCanvas.old_y, event.x, event.y, width=brushSize, fill=paintingColour, outline=paintingColour)
     newCanvas.old_x = event.x 
     newCanvas.old_y = event.y
 
 def erase(event):
-    newCanvas.create_line(newCanvas.old_x, newCanvas.old_y, event.x, event.y, width=20, fill=RGBtoHEX())
+    newCanvas.create_oval(newCanvas.old_x, newCanvas.old_y, event.x, event.y, width=brushSize, fill=RGBtoHEX(), outline=RGBtoHEX())
     newCanvas.old_x = event.x 
-    newCanvas.old_y = event.y    
+    newCanvas.old_y = event.y
 
-def changeTool(num):
-    match num:
-        case 1:
-            newCanvas.config(cursor="pencil")
-            newCanvas.bind("<Button-1>", starting_point)
-            newCanvas.bind("<B1-Motion>", paint)
-        case 2:
-            newCanvas.config(cursor="X_cursor")
-            newCanvas.bind("<Button-1>", starting_point)
-            newCanvas.bind("<B1-Motion>", erase)
-        case 3:
-            newCanvas.create_rectangle(0,0,getX(),getY(), fill=RGBtoHEX())    
-        case 4:
-            newCanvas.config(cursor="heart")
+def rectangle(event):
+    newCanvas.create_rectangle(startingX, startingY, event.x, event.y, width=brushSize, outline=paintingColour)
+
+def circle(event):
+    newCanvas.create_oval(startingX, startingY, event.x, event.y, width=brushSize, outline=paintingColour)
+
+def arc(event):
+    newCanvas.create_arc(startingX, startingY, event.x, event.y, width=brushSize, outline=paintingColour)
 
 def changeColour(num):
     global paintingColour
@@ -74,6 +88,34 @@ def changeColour(num):
             paintingColour = "pink"
         case 0:
             paintingColour = "black"
+
+def changeTool(num):
+    newCanvas.unbind("<Button-1>")
+    newCanvas.unbind("<B1-Motion>")
+    newCanvas.unbind("<ButtonRelease-1>")
+    match num:
+        case 1:
+            newCanvas.config(cursor="pencil")
+            newCanvas.bind("<Button-1>", starting_point_brush)
+            newCanvas.bind("<B1-Motion>", paint)
+        case 2:
+            newCanvas.config(cursor="X_cursor")
+            newCanvas.bind("<Button-1>", starting_point_brush)
+            newCanvas.bind("<B1-Motion>", erase)
+        case 3:
+            newCanvas.create_rectangle(0,0,getX(),getY(), fill=RGBtoHEX())    
+        case 4:
+            newCanvas.config(cursor="heart")
+            newCanvas.bind("<Button-1>", starting_point_shape)
+            newCanvas.bind("<ButtonRelease-1>", rectangle)
+        case 5:
+            newCanvas.config(cursor="heart")
+            newCanvas.bind("<Button-1>", starting_point_shape)
+            newCanvas.bind("<ButtonRelease-1>", circle)
+        case 6:
+            newCanvas.config(cursor="heart")
+            newCanvas.bind("<Button-1>", starting_point_shape)
+            newCanvas.bind("<ButtonRelease-1>", arc)
     
 
 def createCanvas():        
@@ -97,39 +139,67 @@ def createCanvas():
     selectClear = tk.Button(canvasContainer, text="Clear", command=lambda: changeTool(3) ) 
     selectClear.grid(row=0, column=3)
 
-    selectTemp2 = tk.Button(canvasContainer, text="Temp2", command=lambda: changeTool(4) )
-    selectTemp2.grid(row=0, column=4)
+    # Brush size row
+    labelBrushSize = tk.Label(canvasContainer, text="Brush Size")
+    labelBrushSize.grid(row=1, column=0)
 
-    labelColours = tk.Label(canvasContainer, text="Colours")
-    labelColours.grid(row=1, column=0)
+    selectSmall = tk.Button(canvasContainer, text="Small", command=lambda: changeBrushSize(1) )  
+    selectSmall.grid(row=1, column=1)
+
+    selectMedium = tk.Button(canvasContainer, text="Medium", command=lambda: changeBrushSize(2) )
+    selectMedium.grid(row=1, column=2)
+
+    selectLarge = tk.Button(canvasContainer, text="Large", command=lambda: changeBrushSize(3) ) 
+    selectLarge.grid(row=1, column=3)
+
+    selectXL = tk.Button(canvasContainer, text="XL", command=lambda: changeBrushSize(4) )
+    selectXL.grid(row=1, column=4)
 
     # Colours Row
+    labelColours = tk.Label(canvasContainer, text="Colours")
+    labelColours.grid(row=2, column=0)
+
     #global selectRed
     selectRed = tk.Button(canvasContainer, text="Red", command=lambda: changeColour(1) )
-    selectRed.grid(row=1, column=1)
+    selectRed.grid(row=2, column=1)
 
     selectGreen = tk.Button(canvasContainer, text="Green", command=lambda: changeColour(2) )
-    selectGreen.grid(row=1, column=2)
+    selectGreen.grid(row=2, column=2)
 
     selectBlue = tk.Button(canvasContainer, text="Blue", command=lambda: changeColour(3) )
-    selectBlue.grid(row=1, column=3)
+    selectBlue.grid(row=2, column=3)
 
     selectYellow = tk.Button(canvasContainer, text="Yellow", command=lambda: changeColour(4) )
-    selectYellow.grid(row=1, column=4)
+    selectYellow.grid(row=2, column=4)
 
     selectPink = tk.Button(canvasContainer, text="Pink", command=lambda: changeColour(5) )
-    selectPink.grid(row=1, column=5)
+    selectPink.grid(row=2, column=5)
 
     selectBlack = tk.Button(canvasContainer, text="Black", command=lambda: changeColour(0) )
-    selectBlack.grid(row=1, column=6)
+    selectBlack.grid(row=2, column=6)
+
+    # Shapes Row
+    labelShapes = tk.Label(canvasContainer, text="Shapes")
+    labelShapes.grid(row=3, column=0)
+
+    selectSquare = tk.Button(canvasContainer, text="Square", command=lambda: changeTool(4) )
+    selectSquare.grid(row=3, column=1)
+
+    selectCircle = tk.Button(canvasContainer, text="Circle", command=lambda: changeTool(5) )
+    selectCircle.grid(row=3, column=2)
+
+    selectArc = tk.Button(canvasContainer, text="Arc", command=lambda: changeTool(6) )
+    selectArc.grid(row=3, column=3)
 
     global newCanvas
     newCanvas = tk.Canvas(canvasContainer, height=getY(), width=getX(), background=RGBtoHEX(), cursor="pencil")
-    newCanvas.grid(row=2, column=0, columnspan=12)
+    newCanvas.grid(row=4, column=0, columnspan=12)
 
-    newCanvas.bind("<Button-1>", starting_point)
+    newCanvas.bind("<Button-1>", starting_point_brush)
     newCanvas.bind("<B1-Motion>", paint)
+    
     changeColour(0)
+    changeBrushSize(1)
 
     canvasWindow.mainloop()
 
