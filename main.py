@@ -72,6 +72,20 @@ def circle(event):
 def arc(event):
     newCanvas.create_arc(startingX, startingY, event.x, event.y, width=brushSize, outline=paintingColour)
 
+def isosceles(event):
+    newCanvas.create_line(((event.x+startingX)/2), startingY, event.x, event.y, width=brushSize)
+    newCanvas.create_line(event.x, event.y, startingX, event.y, width=brushSize)
+    newCanvas.create_line(startingX, event.y, ((event.x+startingX)/2), startingY, width=brushSize)
+
+def raTriangle(event):
+    newCanvas.create_line(startingX, startingY, event.x, event.y, width=brushSize)
+    newCanvas.create_line(event.x, event.y, startingX, event.y,  width=brushSize)
+    newCanvas.create_line(startingX, event.y, startingX, startingY, width=brushSize)
+
+def rightArrow(event):
+    print("right arrow")
+
+
 def changeColour(num):
     global paintingColour
     match num:
@@ -116,6 +130,18 @@ def changeTool(num):
             newCanvas.config(cursor="heart")
             newCanvas.bind("<Button-1>", starting_point_shape)
             newCanvas.bind("<ButtonRelease-1>", arc)
+        case 7:
+            newCanvas.config(cursor="pirate")
+            newCanvas.bind("<Button-1>", starting_point_shape)
+            newCanvas.bind("<ButtonRelease-1>", isosceles)
+        case 8:
+            newCanvas.config(cursor="pirate")
+            newCanvas.bind("<Button-1>", starting_point_shape)
+            newCanvas.bind("<ButtonRelease-1>", raTriangle)
+        case 9:
+            newCanvas.config(cursor="X_cursor")
+            newCanvas.bind("<Button-1>", starting_point_shape)
+            newCanvas.bind("<ButtonRelease-1>", rightArrow)
     
 
 def createCanvas():        
@@ -191,6 +217,15 @@ def createCanvas():
     selectArc = tk.Button(canvasContainer, text="Arc", command=lambda: changeTool(6) )
     selectArc.grid(row=3, column=3)
 
+    selectIsosceles = tk.Button(canvasContainer, text="Isosceles", command=lambda: changeTool(7) )
+    selectIsosceles.grid(row=3, column=4)
+
+    selectTriangle = tk.Button(canvasContainer, text="RA-Triangle", command=lambda: changeTool(8) )
+    selectTriangle.grid(row=3, column=5)
+
+    selectRightArrow = tk.Button(canvasContainer, text="Right Arrow", command=lambda: changeTool(9) )
+    selectRightArrow.grid(row=3, column=6)
+
     global newCanvas
     newCanvas = tk.Canvas(canvasContainer, height=getY(), width=getX(), background=RGBtoHEX(), cursor="pencil")
     newCanvas.grid(row=4, column=0, columnspan=12)
@@ -240,19 +275,19 @@ labelXYError.grid(row=1,column=0)
 labelR = tk.Label(frame, text="R: ")
 labelR.grid(row=2, column=0)
 scaleR = tk.Scale(frame, variable=int, from_= 0, to = 255, orient= "horizontal")
-scaleR.grid(row=2, column=1)
+scaleR.grid(row=2, column=1, columnspan=3)
 scaleR.set(255)
 
 labelG = tk.Label(frame, text="G: ")
 labelG.grid(row=3, column=0)
 scaleG = tk.Scale(frame, variable=int, from_= 0, to = 255, orient= "horizontal")
-scaleG.grid(row=3, column=1)
+scaleG.grid(row=3, column=1, columnspan=3)
 scaleG.set(123)
 
 labelB = tk.Label(frame, text="B: ")
 labelB.grid(row=4, column=0)
 scaleB = tk.Scale(frame, variable=int, from_= 0, to = 255, orient= "horizontal")
-scaleB.grid(row=4, column=1)
+scaleB.grid(row=4, column=1, columnspan=3)
 scaleB.set(123)
 
 buttonCreate = tk.Button(window, text="Create", command=createCanvas)
