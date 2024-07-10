@@ -82,8 +82,18 @@ def raTriangle(event):
     newCanvas.create_line(event.x, event.y, startingX, event.y,  width=brushSize)
     newCanvas.create_line(startingX, event.y, startingX, startingY, width=brushSize)
 
-def rightArrow(event):
-    print("right arrow")
+def arrow(event):
+    newCanvas.create_line(event.x, (event.y+startingY)/2, startingX, startingY, width=brushSize)
+    newCanvas.create_line(event.x, (event.y+startingY)/2, startingX, event.y, width=brushSize)
+
+    newCanvas.create_line(startingX, startingY, (startingX+event.x)/2, (startingY+event.y)/2, width=brushSize) # (startingX+event.x)/3 on var3 make a cool shape
+    newCanvas.create_line(startingX, event.y, (startingX+event.x)/2, (startingY+event.y)/2, width=brushSize) # (startingX+event.x)/3 on var3 make a cool shape
+
+def star(event):
+    print("star")
+
+def hexagon(event):
+    print("hexagon")
 
 
 def changeColour(num):
@@ -141,7 +151,15 @@ def changeTool(num):
         case 9:
             newCanvas.config(cursor="X_cursor")
             newCanvas.bind("<Button-1>", starting_point_shape)
-            newCanvas.bind("<ButtonRelease-1>", rightArrow)
+            newCanvas.bind("<ButtonRelease-1>", arrow)
+        case 10:
+            newCanvas.config(cursor="X_cursor")
+            newCanvas.bind("<Button-1>", starting_point_shape)
+            newCanvas.bind("<ButtonRelease-1>", star)
+        case 11:
+            newCanvas.config(cursor="X_cursor")
+            newCanvas.bind("<Button-1>", starting_point_shape)
+            newCanvas.bind("<ButtonRelease-1>", hexagon)
     
 
 def createCanvas():        
@@ -223,8 +241,14 @@ def createCanvas():
     selectTriangle = tk.Button(canvasContainer, text="RA-Triangle", command=lambda: changeTool(8) )
     selectTriangle.grid(row=3, column=5)
 
-    selectRightArrow = tk.Button(canvasContainer, text="Right Arrow", command=lambda: changeTool(9) )
-    selectRightArrow.grid(row=3, column=6)
+    selectArrow = tk.Button(canvasContainer, text="Arrow Head", command=lambda: changeTool(9) )
+    selectArrow.grid(row=3, column=6)
+
+    selectStar = tk.Button(canvasContainer, text="Star", command=lambda: changeTool(10) )
+    selectStar.grid(row=3, column=7)
+
+    selectHexagon = tk.Button(canvasContainer, text="Hexagon", command=lambda: changeTool(11) )
+    selectHexagon.grid(row=3, column=8)
 
     global newCanvas
     newCanvas = tk.Canvas(canvasContainer, height=getY(), width=getX(), background=RGBtoHEX(), cursor="pencil")
